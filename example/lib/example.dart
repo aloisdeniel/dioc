@@ -17,7 +17,7 @@ class MockService implements Service {
 
 
 class OtherService {
-  @Inject.named("test", mode: InjectMode.create)
+  @Inject(mode: InjectMode.create, factory: "test")
   final Service dependency;
 
   @inject
@@ -35,7 +35,7 @@ class WebService implements Service {
 @bootsrapper
 @Provide.implemented(OtherService)
 abstract class AppBootsrapper extends Bootsrapper {
-  @Provide(Service, MockService)
+  @Provide(Service, MockService, name: "test")
   Container development();
 
   @Provide(Service, WebService)

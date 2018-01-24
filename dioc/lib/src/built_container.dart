@@ -5,18 +5,18 @@ enum InjectMode {
 
 class Inject {
   final String name;
+  final String factory;
   final InjectMode mode;
-  const Inject.named(this.name, { mode = InjectMode.create}) : mode = mode;
-  const Inject({ mode = InjectMode.create}) : name = null, mode = mode;
+  const Inject({ this.name = null, this.factory = null, this.mode = InjectMode.create});
 }
 
 class Provide {
   final String name;
+  final String factory;
   final Type abstraction;
   final Type implementation;
-  const Provide.implemented(abstraction) : abstraction = abstraction, implementation = abstraction, name = null;
-  const Provide.named(this.name, this.abstraction, this.implementation);
-  const Provide(this.abstraction, this.implementation) : name = null;
+  const Provide.implemented(abstraction, { this.name = null, this.factory = null }) : abstraction = abstraction, implementation = abstraction;
+  const Provide(this.abstraction, this.implementation, { this.name = null, this.factory = null });
 }
 
 class Bootsrapper {

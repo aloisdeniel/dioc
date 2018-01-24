@@ -23,8 +23,21 @@ container.register(Service, (c) => new WebService());
 container.register(Service, (c) => new MockService(), name : "demo");
 
 final web = container.create(Service);
-final demo = container.create(Service, name: "demo");
+final demo = container.create(Service, factory: "demo");
 ```
+
+It is also possible to have multiple named singleton instances :
+
+```dart
+final container = new Container();
+container.register(Service, (c) => new WebService());
+container.register(Service, (c) => new MockService(), name : "demo");
+
+final web = container.singleton(Service);
+final demo = container.singleton(Service, name: "demo", factory: "demo");
+```
+
+If you want to reset your container use the `unregister` or `reset` methods.
 
 ## Code generation
 

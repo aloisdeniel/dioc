@@ -11,14 +11,14 @@ class _AppBootsrapper extends AppBootsrapper {
     final container = new Container();
     container.register(
         OtherService,
-        (c) => new OtherService(c.create(Service, name: 'test'),
+        (c) => new OtherService(c.create(Service, factory: 'test'),
             dependency2: c.create(Service)));
     return container;
   }
 
   Container development() {
     final container = this.base();
-    container.register(Service, (c) => new MockService());
+    container.register(Service, (c) => new MockService(), name: 'test');
     return container;
   }
 

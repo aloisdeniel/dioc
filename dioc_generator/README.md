@@ -1,6 +1,6 @@
 # dioc_generator
 
-A generator of code for [dioc](../dioc) containers.
+A generator of code for [dioc](https://pub.dartlang.org/packages/dioc) containers.
 
 ## Usage
 
@@ -45,7 +45,7 @@ class OtherService {
 
 To trigger code generation, create a `tool/watch.dart` file into your project based on [watch.dart](tool/watch.dart) file and run the `dart tool/watch.dart` command at the root of your project. A `*.g.dart` will be contiously updated next to your bootstrapper.
 
-A [complete example](../example) is also available.
+A [complete example](https://github.com/aloisdeniel/dioc/tree/master/example) is also available.
 
 
 ## Features and bugs

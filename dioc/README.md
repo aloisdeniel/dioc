@@ -1,22 +1,43 @@
 # dioc
 
-A library for Dart developers.
-
-Created from templates made available by Stagehand under a BSD-style
-[license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
+Inversion of control based on dependency injection through containers.
 
 ## Usage
 
 A simple usage example:
 
-    import 'package:dioc/dioc.dart';
+```dart
+final container = new Container();
+container.register(Service, (c) => new MockService());
+container.register(Controller, (c) => new Controller(c.create(Service)));
 
-    main() {
-      var awesome = new Awesome();
-    }
+final created = container.create(Controller);
+final singleton = container.singleton(Controller);
+```
+
+You can also name registrations if multiples instances or factories of the same type are needed.
+
+```dart
+final container = new Container();
+container.register(Service, (c) => new WebService());
+container.register(Service, (c) => new MockService(), name : "demo");
+
+final web = container.create(Service);
+final demo = container.create(Service, name: "demo");
+```
+
+## Code generation
+
+A [dioc_generator](../dioc_generator) package is also available for simplifying injections based on constructor analysis. 
+
+## Notes
+
+All dependency resolution isn't based on mirrors because it is intended to be used with strong mode.
+
+Currently, the package is intended to be used with Dart 1, but it will be migrated to Dart 2 very soon to use strong typed generics instead.
 
 ## Features and bugs
 
 Please file feature requests and bugs at the [issue tracker][tracker].
 
-[tracker]: http://example.com/issues/replaceme
+[tracker]: https://github.com/aloisdeniel/dioc/issues

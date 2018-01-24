@@ -33,11 +33,11 @@ class WebService implements Service {
 }
 
 @bootsrapper
-@Provide(OtherService)
+@Provide.implemented(OtherService)
 abstract class AppBootsrapper extends Bootsrapper {
-  @Provide.implemented(Service, MockService)
+  @Provide(Service, MockService)
   Container development();
 
-  @Provide.implemented(Service, WebService)
+  @Provide(Service, WebService)
   Container production();
 }

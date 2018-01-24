@@ -14,9 +14,9 @@ class Provide {
   final String name;
   final Type abstraction;
   final Type implementation;
-  const Provide(abstraction) : abstraction = abstraction, implementation = abstraction, name = null;
+  const Provide.implemented(abstraction) : abstraction = abstraction, implementation = abstraction, name = null;
   const Provide.named(this.name, this.abstraction, this.implementation);
-  const Provide.implemented(this.abstraction, this.implementation) : name = null;
+  const Provide(this.abstraction, this.implementation) : name = null;
 }
 
 class Bootsrapper {

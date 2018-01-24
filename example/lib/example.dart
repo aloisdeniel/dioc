@@ -20,7 +20,10 @@ class OtherService {
   @Inject.named("test", mode: InjectMode.create)
   final Service dependency;
 
-  OtherService(this.dependency);
+  @inject
+  final Service dependency2;
+
+  OtherService(this.dependency,{this.dependency2});
 }
 
 

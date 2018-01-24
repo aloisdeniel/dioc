@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
@@ -19,7 +20,6 @@ class BootstrapperGenerator extends Generator {
 
     var output = new StringBuffer();
 
-    final injections = library.annotatedWith(const TypeChecker.fromRuntime(Inject));
     final providers = library.annotatedWith(const TypeChecker.fromRuntime(Provide));
     final bootsrappers = library.annotatedWith(const TypeChecker.fromRuntime(Bootsrapper));
 
@@ -48,7 +48,6 @@ class BootstrapperGenerator extends Generator {
           final methodProviders = const TypeChecker.fromRuntime(Provide)
                                                    .annotationsOf(method)
                                                    .map((c) => new AnnotatedElement(new ConstantReader(c), element));
-          methodProviders.forEach((c) => output.writeln("// $c"));
           bootstrapperClassBuilder.methods.add(
               _generateEnvironmentMethod(method.name, false, methodProviders));
         });
@@ -80,10 +79,6 @@ class BootstrapperGenerator extends Generator {
 
     // Outputs code for each method
 
-    providers.forEach((c) {
-      output.writeln("// provider: $c");
-    });
-
     final emitter = new DartEmitter();
     classes.forEach((c) {
       output.writeln(new DartFormatter().format(
@@ -111,21 +106,9 @@ class BootstrapperGenerator extends Generator {
       name = name != null ? ", name: '$name'" : "";
 
       // Scanning constructor
-      var implementationClass = implementation.element.library.getType(implementation.name);
+      final implementationClass = implementation.element.library.getType(implementation.name);
 
-      var parameters = implementationClass.unnamedConstructor.parameters.map((c) {
-
-        var field = implementationClass.getField(c.name);
-        final injectAnnotation = const TypeChecker.fromRuntime(Inject).firstAnnotationOf(field);
-
-        var name = injectAnnotation?.getField("name")?.toStringValue();
-        name = name != null ? ", name: '$name'" : "";
-
-        var modeIndex = injectAnnotation?.getField("mode")?.getField("index")?.toIntValue() ?? 0;
-        var mode = InjectMode.values[modeIndex].toString().substring(11);
-
-        return  "c.$mode(${c.type.name}$name)";
-      }).join(", ");
+      final parameters = implementationClass.unnamedConstructor.parameters.map((c) => _generateParameter(implementationClass, c)).join(", ");
 
       code.statements.add(new Code("container.register(${abstraction.name}, (c) => new ${implementation.name}($parameters)$name);"));
     });
@@ -138,6 +121,20 @@ class BootstrapperGenerator extends Generator {
       ..body = code.build();
 
     return method.build();
+  }
+
+  String _generateParameter(ClassElement implementationClass, ParameterElement c) {
+
+    var field = implementationClass.getField(c.name);
+    final injectAnnotation = const TypeChecker.fromRuntime(Inject).firstAnnotationOf(field);
+
+    var name = injectAnnotation?.getField("name")?.toStringValue();
+    name = name != null ? ", name: '$name'" : "";
+
+    var modeIndex = injectAnnotation?.getField("mode")?.getField("index")?.toIntValue() ?? 0;
+    var mode = InjectMode.values[modeIndex].toString().substring(11);
+
+    return (c.parameterKind == ParameterKind.NAMED ? c.name + ": " : "") +  "c.$mode(${c.type.name}$name)";
   }
 
   @override

@@ -1,6 +1,6 @@
 # dioc_generator
 
-A generator of code for [dioc](../dioc) containers.
+A generator of code for [dioc](https://pub.dartlang.org/packages/dioc) containers.
 
 ## Usage
 
@@ -75,7 +75,7 @@ Then simply use the provided builder to create your `Container`.
 final container = AppBootsrapperBuilder.instance.development();
 ```
 
-A [complete example](../example) is also available.
+A [complete example](https://github.com/aloisdeniel/dioc/tree/master/example) is also available.
 
 
 ## Features and bugs

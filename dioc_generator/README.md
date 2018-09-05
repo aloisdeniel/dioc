@@ -20,7 +20,7 @@ part "example.g.dart";
 @Provide.implemented(OtherService) // Default registration for all environments
 abstract class AppBootsrapper extends Bootsrapper {
 
-  @Provide(Service, MockService)
+  @Provide<Service>(Service, MockService)
   Container development();
 
   @Provide(Service, WebService)
@@ -28,7 +28,27 @@ abstract class AppBootsrapper extends Bootsrapper {
 }
 ```
 
-To indicate how to inject dependencies, you can also decorate your class fields with `Inject` annotations (and `@inject`, `@singleton` shortcuts).
+To indicate how to inject dependencies, you have two options : specifying a default mode, or declaring specific injections.
+
+For a default inject mode, add it to `Provide` constructor.
+
+```dart
+@bootsrapper
+@Provide.implemented(OtherService)
+abstract class AppBootsrapper extends Bootsrapper {
+  @Provide(Service, MockService, defaultMode: InjectMode.singleton)
+  Container development();
+}
+```
+
+Getting an instances and default injections will then use the default mode :
+
+```dart
+final service = container<Service>();
+```
+
+
+Decorate your class fields with `Inject` annotations (and `@inject`, `@singleton` shortcuts) to declare specific injections.
 
 
 ```dart
@@ -43,7 +63,17 @@ class OtherService {
 }
 ```
 
-To trigger code generation, create a `tool/watch.dart` file into your project based on [watch.dart](tool/watch.dart) file and run the `dart tool/watch.dart` command at the root of your project. A `*.g.dart` will be contiously updated next to your bootstrapper.
+To trigger code generation, run the command :
+
+```bash
+pub run build_runner build
+```
+
+Then simply use the provided builder to create your `Container`.
+
+```dart
+final container = AppBootsrapperBuilder.instance.development();
+```
 
 A [complete example](../example) is also available.
 

@@ -3,12 +3,11 @@ import 'dart:async';
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:dioc/dioc.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:dioc/src/built_container.dart';
-
-
 
 class BootstrapperGenerator extends Generator {
   final bool forClasses, forLibrary;
@@ -89,7 +88,7 @@ class BootstrapperGenerator extends Generator {
 
     var code = new BlockBuilder();
 
-    code.statements.add(new Code("final container = ${createContainer ? "new Container()" : "this.base()" };"));
+    code.statements.add(new Code("final container = ${createContainer ? "Container()" : "this.base()" };"));
 
     providers.forEach((provide) {
       var statement = _generateRegistration(provide);
@@ -116,7 +115,11 @@ class BootstrapperGenerator extends Generator {
     // Scanning constructor
     final implementationClass = implementation.element.library.getType(implementation.name);
     final parameters = implementationClass.unnamedConstructor.parameters.map((c) => _generateParameter(implementationClass, c)).join(", ");
-    return new Code("container.register(${abstraction.name}, (c) => new ${implementation.name}($parameters)$name);");
+    
+    var modeIndex = annotation?.getField("defaultMode")?.getField("index")?.toIntValue() ?? 0;
+    var defaultMode = InjectMode.values[modeIndex].toString().substring(11);
+    
+    return new Code("container.register<${abstraction.name}>((c) => ${implementation.name}($parameters)$name, defaultMode: InjectMode.$defaultMode);");
   }
 
   String _generateParameter(ClassElement implementationClass, ParameterElement c) {
@@ -125,15 +128,15 @@ class BootstrapperGenerator extends Generator {
     final injectAnnotation = const TypeChecker.fromRuntime(Inject).firstAnnotationOf(field);
 
     var name = injectAnnotation?.getField("name")?.toStringValue();
-    name = name != null ? ", name: '$name'" : "";
+    name = name != null ? "name: '$name'" : "";
 
-    var factory = injectAnnotation?.getField("factory")?.toStringValue();
-    factory = factory != null ? ", factory: '$factory'" : "";
+    var creator = injectAnnotation?.getField("creator")?.toStringValue();
+    creator = creator != null ? (name != "" ? ", " : "") + "creator: '$creator'" : "";
 
     var modeIndex = injectAnnotation?.getField("mode")?.getField("index")?.toIntValue() ?? 0;
-    var mode = InjectMode.values[modeIndex].toString().substring(11);
+    var mode = modeIndex == 0 ? "get" : InjectMode.values[modeIndex].toString().substring(11);
 
-    return (c.parameterKind == ParameterKind.NAMED ? c.name + ": " : "") +  "c.$mode(${c.type.name}$name$factory)";
+    return (c.parameterKind == ParameterKind.NAMED ? c.name + ": " : "") +  "c.$mode<${c.type.name}>($name$creator)";
   }
 
   List<AnnotatedElement> _findAnnotation(Element element, Type annotation) {

@@ -3,28 +3,30 @@
 part of example;
 
 // **************************************************************************
-// Generator: BootstrapperGenerator
+// BootstrapperGenerator
 // **************************************************************************
 
 class _AppBootsrapper extends AppBootsrapper {
   Container base() {
-    final container = new Container();
-    container.register(
-        OtherService,
-        (c) => new OtherService(c.create(Service, factory: 'test'),
-            dependency2: c.create(Service)));
+    final container = Container();
+    container.register<OtherService>(
+        (c) => OtherService(c.create<Service>(),
+            dependency2: c.singleton<Service>()),
+        defaultMode: InjectMode.unspecified);
     return container;
   }
 
   Container development() {
     final container = this.base();
-    container.register(Service, (c) => new MockService(), name: 'test');
+    container.register<Service>((c) => MockService(),
+        name: 'test', defaultMode: InjectMode.unspecified);
     return container;
   }
 
   Container production() {
     final container = this.base();
-    container.register(Service, (c) => new WebService());
+    container.register<Service>((c) => WebService(),
+        defaultMode: InjectMode.unspecified);
     return container;
   }
 }

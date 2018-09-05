@@ -38,27 +38,27 @@ abstract class AppBootsrapper extends Bootsrapper {
 
 class _AppBootsrapper implements AppBootsrapper {
   Container base() {
-    final container = new Container();
-    container.register(OtherService, (c) => new OtherService(c.singleton(Service)));
+    final container = Container();
+    container.register<OtherService>((c) => OtherService(c.singleton<Service>()));
     return container;
   }
 
   Container development() {
     final container = base();
-    container.register(Service, (c) => new MockService());
+    container.register<Service>((c) => MockService());
     return container;
   }
 
   Container production() {
     final container = base();
-    container.register(Service, (c) => new WebService());
+    container.register<Service>((c) => WebService());
     return container;
   }
 }
 
 class AppBootsrapperBuilder  {
   static final AppBootsrapper instance = build();
-  static AppBootsrapper build() => new _AppBootsrapper();
+  static AppBootsrapper build() => _AppBootsrapper();
 }
 
 // Main

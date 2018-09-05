@@ -7,34 +7,34 @@ Inversion of control based on dependency injection through containers.
 A simple usage example:
 
 ```dart
-final container = new Container();
-container.register(Service, (c) => new MockService());
-container.register(Controller, (c) => new Controller(c.create(Service)));
+final container = Container();
+container.register<Service>((c) => MockService());
+container.register<Service>((c) => Controller(c.create(Service)));
 
-final created = container.create(Controller);
-final singleton = container.singleton(Controller);
+final created = container.create<Controller>();
+final singleton = container.singleton<Controller>();
 ```
 
 You can also name registrations if multiples instances or factories of the same type are needed.
 
 ```dart
-final container = new Container();
-container.register(Service, (c) => new WebService());
-container.register(Service, (c) => new MockService(), name : "demo");
+final container = Container();
+container.register<Service>((c) => WebService());
+container.register<Service>((c) => MockService(), name : "demo");
 
-final web = container.create(Service);
-final demo = container.create(Service, factory: "demo");
+final web = container.create<Service>();  // or container<Service>() since Container is callable
+final demo = container.create<Service>(factory: "demo");
 ```
 
 It is also possible to have multiple named singleton instances :
 
 ```dart
-final container = new Container();
-container.register(Service, (c) => new WebService());
-container.register(Service, (c) => new MockService(), name : "demo");
+final container = Container();
+container.register<Service>((c) => WebService());
+container.register<Service>((c) => MockService(), name : "demo");
 
-final web = container.singleton(Service);
-final demo = container.singleton(Service, name: "demo", factory: "demo");
+final web = container.singleton<Service>();
+final demo = container.singleton<Service>(name: "demo", factory: "demo");
 ```
 
 If you want to reset your container use the `unregister` or `reset` methods.

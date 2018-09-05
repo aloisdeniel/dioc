@@ -1,61 +1,131 @@
 /// An instance factory of a given type.
-typedef dynamic Factory(Container container);
+typedef T Creator<T>(Container container);
+
+// Describes how instances can be injected.
+enum InjectMode {
+  unspecified,
+  singleton,
+  create,
+}
 
 /// A dependency container responsible for instantiating objects.
 class Container {
   /// All registered factories.
-  Map<Type,Map<String, Factory>> _factories = new Map<Type,Map<String, Factory>>();
+  Map<Type, Factory> _factories = Map<Type, Factory>();
 
-  /// All global instances.
-  Map<Type,Map<String, dynamic>> _singletons = new Map<Type,Map<String, dynamic>>();
-
-  /// Registers a [factory] that describes how to build an instance of a
-  /// given [type] and optional [name].
-  void register(Type type, Factory factory, {String name = null}) {
-    final map = this._factories.putIfAbsent(type, () => new Map<String,Factory>());
-    map[name] = factory;
+  /// Registers a [creator] that describes how to build an instance of a
+  /// given [type] and optional [name]. The [defaultMode] describe the default 
+  /// behaviour when accessing an instance with get method.
+  void register<T>(Creator<T> creator, {String name = null, InjectMode defaultMode = InjectMode.unspecified}) {
+    final factory = _getOrCreateFactory<T>(defaultMode);
+    factory.register(name, creator);
   }
 
   /// Unregisters the factory for [type] and optional [name].
-  void unregister(Type type, {String name = null}) {
-    final map = _factories[type];
-    map?.remove(name);
+  void unregister<T>({String name = null}) {
+    final map = _factories[T];
+    map?.unregister(name);
   }
 
-  /// Unregisters all factories if [factories] is true and all singletons if [singletons].
-  void reset({ bool factories = true, bool singletons = true }) {
-    if(factories) _factories = new Map<Type,Map<String, Factory>>();
-    if(singletons) _singletons = new Map<Type,Map<String, dynamic>>();
+  /// Unregisters all [factories].
+  void reset() {
+    _factories = Map<Type,Factory>();
   }
 
   /// Gets the global instance of [type] with an optional [name]. It creates an instance
   /// at first call and then returns it each time it is requested.
-  /// A [factory] name could be precised to use specific registered factory for first
+  /// A [creator] name could be precised to use specific registered factory for first
   /// instantiation.
-  dynamic singleton(Type type, {String name = null, String factory = null}) {
-    final map = this._singletons.putIfAbsent(type, () => new Map<String,dynamic>());
-    return map.putIfAbsent(name, () => this.create(type, factory: factory));
+  T singleton<T>({String name = null, String creator = null}) {
+    final result = this._getFactory<T>();
+    return result.singleton(name: name, creator: creator);
   }
 
-  /// Creates a new instance of [type] through the registered factory. A [factory] name could be precised
-  /// to use specific registered factory.
-  dynamic create(Type type, {String factory = null}) {
-    final map = _factories[type];
+  /// Creates a new instance of [type] through the registered factory. A [creator] name could be precised
+  /// to use specific registered creator.
+  dynamic create<T>({String creator = null}) {
+    final result = this._getFactory<T>();
+    return result.create(creator: creator);
+  }
 
-    if(map == null)
-      throw("No factory found for type '$type'");
+  /// Creates a new instance of [type] through the registered factory. A [creator] name could be precised
+  /// to use specific registered creator. A [mode] can be precised, if not the default registered mode is 
+  /// used.
+  dynamic get<T>({String name = null, String creator = null, InjectMode mode = InjectMode.unspecified}) {
+    final result = this._getFactory<T>();
+    return result.get(name: name, creator: creator, mode: mode);
+  }
 
-    final builder = map[factory];
+  /// A shortcut for get<T> method
+  call<T>({String name = null, String creator = null, InjectMode mode = InjectMode.unspecified}) {
+    return get<T>(name: name, creator: creator, mode: mode);
+  }
+
+  /// Indicates whether this container has a factory for [type] with the given [creator] name.
+  bool has<T>({String creator = null}) {
+    final map = _factories[T];
+    return (map != null) && map.has(creator: creator);
+  }
+
+  Factory<T> _getOrCreateFactory<T>(InjectMode defaultMode) {
+    return this._factories.putIfAbsent(T, () => Factory<T>(this, defaultMode: defaultMode));
+  }
+
+  Factory<T> _getFactory<T>() {
+    Factory<T> factory = this._factories[T];
+    if(factory == null)
+      throw("No registered type '$T'");
+    return factory;
+  }
+}
+
+class Factory<T> {
+  InjectMode defaultMode;
+  Container _container;
+  Map<String, Creator> _creators = {};
+  Map<String, dynamic> _singletons = {};
+
+  Factory(this._container, {this.defaultMode = InjectMode.unspecified});
+
+  void register(String name, Creator<T> creator) {
+    this._creators[name] = creator;
+  }
+
+  void unregister(String name) {
+    this._creators.remove(name);
+  }
+
+  T call({String name = null, String creator = null, InjectMode mode = InjectMode.unspecified}) {
+    return this.get(name: name, creator: creator, mode: mode);
+  }
+
+  T get({String name = null, String creator = null, InjectMode mode = InjectMode.unspecified}) {
+    if(mode == InjectMode.unspecified) {
+      mode = this.defaultMode;
+    }
+
+    if(mode == InjectMode.create) {
+      return this.create(creator: creator);
+    }
+
+    return this.singleton(creator: creator, name: name);
+  }
+
+  T singleton({String name = null, String creator = null}) {
+    return _singletons.putIfAbsent(name, () => this.create(creator: creator));
+  }
+
+  /// Creates a new instance with the given [creator].
+  T create({String creator = null}) {
+    final builder = _creators[creator];
 
     if(builder == null)
-      throw("No factory  with name '$factory' found for type '$type'");
+      throw("No creator with name '$creator' found for type '$T'");
 
-    return builder(this);
+    return builder(this._container);
   }
 
-  /// Indicates whether this container has a factory for [type] with the given [factory] name.
-  bool has(Type type, {String factory = null}) {
-    final map = _factories[type];
-    return (map != null) && map.containsKey(factory);
+  bool has({String creator = null}) {
+    return _creators.containsKey(creator);
   }
 }

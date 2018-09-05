@@ -7,6 +7,12 @@ Created from templates made available by Stagehand under a BSD-style
 
 ## Usage
 
+To generate code launch :
+
+```bash
+pub run build_runner build
+```
+
 A simple usage example:
 
     import 'package:example/example.dart';

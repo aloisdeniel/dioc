@@ -1,13 +1,13 @@
 name: dioc
 description: Inversion of control based on dependency injection through containers.
-version: 0.0.1
-homepage: https://aloisdeniel.github.io/
+version: 0.1.0
+homepage: https://github.com/aloisdeniel/dioc
 author: Aloïs Deniel <alois.deniel@outlook.com>
 
 environment:
-  sdk: '>=1.20.1 <2.0.0'
+  sdk: '>2.0.0-dev <3.0.0'
 
 dependencies:
 
 dev_dependencies:
-  test: ^0.12.0
+  test: 

@@ -1,0 +1,15 @@
+targets:
+  $default:
+    builders:
+      dioc_generator|dioc:
+        enabled: true
+
+builders:
+  dioc_generator:
+    target: ":dioc_generator"
+    import: "package:dioc_generator/builder.dart"
+    builder_factories: ["dioc"]
+    build_extensions: {".dart": [".dioc.g.part"]}
+    auto_apply: dependents
+    build_to: cache
+    applies_builders: ["source_gen|combining_builder"]

@@ -15,9 +15,8 @@ class MockService implements Service {
   Future<String> getContent(String id) async => "TEST";
 }
 
-
 class OtherService {
-  @Inject(mode: InjectMode.create, factory: "test")
+  @Inject(mode: InjectMode.create, creator: "test")
   final Service dependency;
 
   @inject
@@ -25,7 +24,6 @@ class OtherService {
 
   OtherService(this.dependency,{this.dependency2});
 }
-
 
 class WebService implements Service {
   @override

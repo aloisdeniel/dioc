@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:build/build.dart';
-import 'package:dioc_generator/bootstrapper_generator.dart';
+import 'package:dioc_generator/dioc_generator.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:test/test.dart';
 import 'package:build_test/build_test.dart';
@@ -8,7 +8,7 @@ import 'package:build_test/build_test.dart';
 
 final String pkgName = 'pkg';
 
-final Builder builder = new PartBuilder([new BootstrapperGenerator()]);
+final Builder builder = new PartBuilder([new BootstrapperGenerator()], ".g.dart");
 
 Future<String> generate(String source) async {
   final srcs = <String, String>{

@@ -23,7 +23,7 @@ container.register<Service>((c) => WebService());
 container.register<Service>((c) => MockService(), name : "demo");
 
 final web = container<Service>(); 
-final demo = container<Service>(factory: "demo");
+final demo = container<Service>(creator: "demo");
 ```
 
 The default `get` behaviour can be changed at registration time with `defaultMode` :

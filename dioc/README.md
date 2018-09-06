@@ -15,26 +15,37 @@ final created = container.create<Controller>();
 final singleton = container.singleton<Controller>();
 ```
 
-You can also name registrations if multiples instances or factories of the same type are needed.
+You can also name registrations if multiple instances or factories of the same type are needed. The default behaviour when registering is `InjectMode.Singleton` (the instance will be resolved on first access and returned on successive calls).
 
 ```dart
 final container = Container();
 container.register<Service>((c) => WebService());
 container.register<Service>((c) => MockService(), name : "demo");
 
-final web = container.create<Service>();  // or container<Service>() since Container is callable
-final demo = container.create<Service>(factory: "demo");
+final web = container<Service>(); 
+final demo = container<Service>(factory: "demo");
 ```
 
-It is also possible to have multiple named singleton instances :
+The default `get` behaviour can be changed at registration time with `defaultMode` :
+
+```dart
+final container = Container();
+container.register<Service>((c) => WebService(), defaultMode: InjectMode.Create);
+
+final web = container<Service>(); 
+final web2 = container<Service>(); // A new instance is created on each call.
+```
+
+It is also possible to call explicitely `singleton` or `create` method for a specific resolution.
 
 ```dart
 final container = Container();
 container.register<Service>((c) => WebService());
-container.register<Service>((c) => MockService(), name : "demo");
 
 final web = container.singleton<Service>();
-final demo = container.singleton<Service>(name: "demo", factory: "demo");
+final web2 = container.singleton<Service>();
+final web3 = container.create<Service>();
+// web == web2 but web != web3
 ```
 
 If you want to reset your container use the `unregister` or `reset` methods.

@@ -58,8 +58,6 @@ A [dioc_generator](../dioc_generator) package is also available for simplifying 
 
 All dependency resolution isn't based on mirrors because it is intended to be used with strong mode.
 
-Currently, the package is intended to be used with Dart 1, but it will be migrated to Dart 2 very soon to use strong typed generics instead.
-
 ## Features and bugs
 
 Please file feature requests and bugs at the [issue tracker][tracker].

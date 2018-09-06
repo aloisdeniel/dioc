@@ -20,7 +20,7 @@ part "example.g.dart";
 @Provide.implemented(OtherService) // Default registration for all environments
 abstract class AppBootsrapper extends Bootsrapper {
 
-  @Provide<Service>(Service, MockService)
+  @Provide(Service, MockService)
   Container development();
 
   @Provide(Service, WebService)
@@ -30,7 +30,7 @@ abstract class AppBootsrapper extends Bootsrapper {
 
 To indicate how to inject dependencies, you have two options : specifying a default mode, or declaring specific injections.
 
-For a default inject mode, add it to `Provide` constructor.
+For a default inject mode, add it to the `Provide` constructor.
 
 ```dart
 @bootsrapper
@@ -44,9 +44,8 @@ abstract class AppBootsrapper extends Bootsrapper {
 Getting an instances and default injections will then use the default mode :
 
 ```dart
-final service = container<Service>();
+final service = container<Service>(); // singleton
 ```
-
 
 Decorate your class fields with `Inject` annotations (and `@inject`, `@singleton` shortcuts) to declare specific injections.
 

@@ -33,7 +33,7 @@ class WebService implements Service {
 @bootsrapper
 @Provide.implemented(OtherService)
 abstract class AppBootsrapper extends Bootsrapper {
-  @Provide(Service, MockService, name: "test")
+  @Provide(Service, MockService, name: "test", defaultMode: InjectMode.singleton)
   Container development();
 
   @Provide(Service, WebService)

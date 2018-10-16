@@ -6,7 +6,7 @@ part of example;
 // BootstrapperGenerator
 // **************************************************************************
 
-class _AppBootsrapper extends AppBootsrapper {
+class _AppBootstrapper extends AppBootstrapper {
   Container base() {
     final container = Container();
     container.register<OtherService>(
@@ -31,10 +31,10 @@ class _AppBootsrapper extends AppBootsrapper {
   }
 }
 
-class AppBootsrapperBuilder {
-  static final _AppBootsrapper instance = build();
+class AppBootstrapperBuilder {
+  static final _AppBootstrapper instance = build();
 
-  static _AppBootsrapper build() {
-    return new _AppBootsrapper();
+  static _AppBootstrapper build() {
+    return new _AppBootstrapper();
   }
 }

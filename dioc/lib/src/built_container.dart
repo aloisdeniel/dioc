@@ -18,12 +18,12 @@ class Provide {
   const Provide(this.abstraction, this._implementation, { this.name = null, this.creator = null, this.defaultMode = InjectMode.unspecified });
 }
 
-class Bootsrapper {
-  const Bootsrapper();
+class Bootstrapper {
+  const Bootstrapper();
 }
 
 const inject = const Inject();
 
 const singleton = const Inject(mode: InjectMode.singleton);
 
-const bootsrapper = const Bootsrapper();
+const bootstrapper = const Bootstrapper();

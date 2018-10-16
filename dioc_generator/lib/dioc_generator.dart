@@ -19,13 +19,13 @@ class BootstrapperGenerator extends Generator {
 
     var output = new StringBuffer();
 
-    final bootsrappers = library.annotatedWith(const TypeChecker.fromRuntime(Bootsrapper));
+    final bootstrappers = library.annotatedWith(const TypeChecker.fromRuntime(Bootstrapper));
 
     final classes = <Class>[];
 
-    bootsrappers.forEach((bootsrapper) {
+    bootstrappers.forEach((bootstrapper) {
 
-      final element = bootsrapper.element;
+      final element = bootstrapper.element;
 
       if(element is ClassElement) {
 
@@ -67,7 +67,7 @@ class BootstrapperGenerator extends Generator {
           ..name = "build"
           ..static = true
           ..returns = refer("_${element.name}")
-          ..body = new Code("return new _AppBootsrapper();")
+          ..body = new Code("return new _AppBootstrapper();")
         ));
 
         classes.add(bootstrapperBuilderClassBuilder.build());
@@ -92,7 +92,7 @@ class BootstrapperGenerator extends Generator {
 
     providers.forEach((provide) {
       var statement = _generateRegistration(provide);
-     code.statements.add(statement);
+      code.statements.add(statement);
     });
 
     code.statements.add(new Code("return container;"));

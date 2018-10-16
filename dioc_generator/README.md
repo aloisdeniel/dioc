@@ -16,9 +16,9 @@ import 'package:dioc/src/built_container.dart';
 
 part "example.g.dart";
 
-@bootsrapper
+@bootstrapper
 @Provide.implemented(OtherService) // Default registration for all environments
-abstract class AppBootsrapper extends Bootsrapper {
+abstract class AppBootstrapper extends Bootstrapper {
 
   @Provide(Service, MockService)
   Container development();
@@ -33,9 +33,9 @@ To indicate how to inject dependencies, you have two options : specifying a defa
 For a default inject mode, add it to the `Provide` constructor.
 
 ```dart
-@bootsrapper
+@bootstrapper
 @Provide.implemented(OtherService)
-abstract class AppBootsrapper extends Bootsrapper {
+abstract class AppBootstrapper extends Bootstrapper {
   @Provide(Service, MockService, defaultMode: InjectMode.singleton)
   Container development();
 }
@@ -71,7 +71,7 @@ pub run build_runner build
 Then simply use the provided builder to create your `Container`.
 
 ```dart
-final container = AppBootsrapperBuilder.instance.development();
+final container = AppBootstrapperBuilder.instance.development();
 ```
 
 A [complete example](https://github.com/aloisdeniel/dioc/tree/master/example) is also available.

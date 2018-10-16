@@ -59,9 +59,9 @@ class WebService implements Service {
   Future<String> getContent(String id) async => "TEST";
 }
 
-@bootsrapper
+@bootstrapper
 @Provide(OtherService)
-abstract class AppBootsrapper extends Bootsrapper {
+abstract class AppBootstrapper extends Bootstrapper {
   @Provide.implemented(Service, MockService)
   Container development();
 

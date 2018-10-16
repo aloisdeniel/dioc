@@ -10,20 +10,19 @@ class Inject {
 class Provide {
   final String name;
   final String creator;
-  final Type _implementation;
   final Type abstraction;
-  Type get implementation => this._implementation ?? this.abstraction;
+  final Type implementation;
   final InjectMode defaultMode;
-  const Provide.implemented(this.abstraction, { this.name = null, this.creator = null, this.defaultMode = InjectMode.unspecified }) : _implementation = null;
-  const Provide(this.abstraction, this._implementation, { this.name = null, this.creator = null, this.defaultMode = InjectMode.unspecified });
+  const Provide.implemented(this.abstraction, { this.name = null, this.creator = null, this.defaultMode = InjectMode.unspecified }) : implementation = abstraction;
+  const Provide(this.abstraction, this.implementation, { this.name = null, this.creator = null, this.defaultMode = InjectMode.unspecified });
 }
 
-class Bootsrapper {
-  const Bootsrapper();
+class Bootstrapper {
+  const Bootstrapper();
 }
 
 const inject = const Inject();
 
 const singleton = const Inject(mode: InjectMode.singleton);
 
-const bootsrapper = const Bootsrapper();
+const bootstrapper = const Bootstrapper();

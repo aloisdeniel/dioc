@@ -6,11 +6,11 @@ part of example;
 // BootstrapperGenerator
 // **************************************************************************
 
-class _AppBootsrapper extends AppBootsrapper {
+class _AppBootstrapper extends AppBootstrapper {
   Container base() {
     final container = Container();
     container.register<OtherService>(
-        (c) => OtherService(c.create<Service>(),
+        (c) => OtherService(c.create<Service>(creator: 'test'),
             dependency2: c.singleton<Service>()),
         defaultMode: InjectMode.unspecified);
     return container;
@@ -19,7 +19,7 @@ class _AppBootsrapper extends AppBootsrapper {
   Container development() {
     final container = this.base();
     container.register<Service>((c) => MockService(),
-        name: 'test', defaultMode: InjectMode.unspecified);
+        name: 'test', defaultMode: InjectMode.singleton);
     return container;
   }
 
@@ -31,10 +31,10 @@ class _AppBootsrapper extends AppBootsrapper {
   }
 }
 
-class AppBootsrapperBuilder {
-  static final _AppBootsrapper instance = build();
+class AppBootstrapperBuilder {
+  static final _AppBootstrapper instance = build();
 
-  static _AppBootsrapper build() {
-    return new _AppBootsrapper();
+  static _AppBootstrapper build() {
+    return new _AppBootstrapper();
   }
 }

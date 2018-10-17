@@ -43,7 +43,7 @@ class Container {
 
   /// Creates a new instance of [type] through the registered factory. A [creator] name could be precised
   /// to use specific registered creator.
-  dynamic create<T>({String creator = null}) {
+  T create<T>({String creator = null}) {
     final result = this._getFactory<T>();
     return result.create(creator: creator);
   }
@@ -51,7 +51,7 @@ class Container {
   /// Creates a new instance of [type] through the registered factory. A [creator] name could be precised
   /// to use specific registered creator. A [mode] can be precised, if not the default registered mode is 
   /// used.
-  dynamic get<T>({String name = null, String creator = null, InjectMode mode = InjectMode.unspecified}) {
+  T get<T>({String name = null, String creator = null, InjectMode mode = InjectMode.unspecified}) {
     final result = this._getFactory<T>();
     return result.get(name: name, creator: creator, mode: mode);
   }

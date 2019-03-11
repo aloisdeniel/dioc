@@ -57,7 +57,7 @@ class Container {
   }
 
   /// A shortcut for get<T> method
-  call<T>({String name = null, String creator = null, InjectMode mode = InjectMode.unspecified}) {
+  T call<T>({String name = null, String creator = null, InjectMode mode = InjectMode.unspecified}) {
     return get<T>(name: name, creator: creator, mode: mode);
   }
 

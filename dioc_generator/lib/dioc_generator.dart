@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dioc/dioc.dart';
@@ -12,11 +11,14 @@ import 'package:dioc/src/built_container.dart';
 class BootstrapperGenerator extends Generator {
   final bool forClasses, forLibrary;
 
-  const BootstrapperGenerator({this.forClasses: true, this.forLibrary: false});
+  const BootstrapperGenerator({
+    this.forClasses = true,
+    this.forLibrary = false,
+  });
 
   @override
   Future<String> generate(LibraryReader library, _) async {
-    var output = new StringBuffer();
+    var output = StringBuffer();
 
     final bootstrappers =
         library.annotatedWith(const TypeChecker.fromRuntime(Bootstrapper));
@@ -27,7 +29,7 @@ class BootstrapperGenerator extends Generator {
       final element = bootstrapper.element;
 
       if (element is ClassElement) {
-        final bootstrapperClassBuilder = new ClassBuilder()
+        final bootstrapperClassBuilder = ClassBuilder()
           ..name = "_${element.name}"
           ..extend = refer(element.name, element.librarySource.uri.toString());
 
@@ -39,8 +41,9 @@ class BootstrapperGenerator extends Generator {
 
         // Environments
         element.methods.forEach((method) {
-          if (method.returnType.name != "Container")
+          if (method.returnType.name != "Container") {
             throw ("A bootstrapper must have only method with a Container returnType");
+          }
 
           final methodProviders = _findAnnotation(method, Provide);
           bootstrapperClassBuilder.methods.add(
@@ -50,21 +53,21 @@ class BootstrapperGenerator extends Generator {
         classes.add(bootstrapperClassBuilder.build());
 
         // Builder class
-        final bootstrapperBuilderClassBuilder = new ClassBuilder()
+        final bootstrapperBuilderClassBuilder = ClassBuilder()
           ..name = "${element.name}Builder";
 
-        bootstrapperBuilderClassBuilder.fields.add(new Field((b) => b
+        bootstrapperBuilderClassBuilder.fields.add(Field((b) => b
           ..name = "instance"
           ..static = true
           ..modifier = FieldModifier.final$
           ..type = refer("_${element.name}")
-          ..assignment = new Code("build()")));
+          ..assignment = Code("build()")));
 
-        bootstrapperBuilderClassBuilder.methods.add(new Method((b) => b
+        bootstrapperBuilderClassBuilder.methods.add(Method((b) => b
           ..name = "build"
           ..static = true
           ..returns = refer("_${element.name}")
-          ..body = new Code("return new _AppBootstrapper();")));
+          ..body = Code("return _AppBootstrapper();")));
 
         classes.add(bootstrapperBuilderClassBuilder.build());
       }
@@ -72,18 +75,18 @@ class BootstrapperGenerator extends Generator {
 
     // Outputs code for each method
 
-    final emitter = new DartEmitter();
+    final emitter = DartEmitter();
     classes.forEach((c) {
-      output.writeln(new DartFormatter().format('${c.accept(emitter)}'));
+      output.writeln(DartFormatter().format('${c.accept(emitter)}'));
     });
     return '$output';
   }
 
   Method _generateEnvironmentMethod(
       String name, bool createContainer, List<AnnotatedElement> providers) {
-    var code = new BlockBuilder();
+    var code = BlockBuilder();
 
-    code.statements.add(new Code(
+    code.statements.add(Code(
         "final container = ${createContainer ? "Container()" : "this.base()"};"));
 
     providers.forEach((provide) {
@@ -91,9 +94,9 @@ class BootstrapperGenerator extends Generator {
       code.statements.add(statement);
     });
 
-    code.statements.add(new Code("return container;"));
+    code.statements.add(Code("return container;"));
 
-    var method = new MethodBuilder()
+    var method = MethodBuilder()
       ..name = name ?? "base"
       ..returns = refer('Container', 'package:dioc/dioc.dart')
       ..body = code.build();
@@ -121,7 +124,7 @@ class BootstrapperGenerator extends Generator {
             0;
     var defaultMode = InjectMode.values[modeIndex].toString().substring(11);
 
-    return new Code(
+    return Code(
         "container.register<${abstraction.name}>((c) => ${implementation.name}($parameters)$name, defaultMode: InjectMode.$defaultMode);");
   }
 
@@ -145,14 +148,14 @@ class BootstrapperGenerator extends Generator {
         ? "get"
         : InjectMode.values[modeIndex].toString().substring(11);
 
-    return (c.parameterKind == ParameterKind.NAMED ? c.name + ": " : "") +
+    return (c.isNamed ? c.name + ": " : "") +
         "c.$mode<${c.type.name}>($name$creator)";
   }
 
   List<AnnotatedElement> _findAnnotation(Element element, Type annotation) {
-    return new TypeChecker.fromRuntime(annotation)
+    return TypeChecker.fromRuntime(annotation)
         .annotationsOf(element)
-        .map((c) => new AnnotatedElement(new ConstantReader(c), element))
+        .map((c) => AnnotatedElement(ConstantReader(c), element))
         .toList();
   }
 

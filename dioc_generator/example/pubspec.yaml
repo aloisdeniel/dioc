@@ -14,5 +14,5 @@ dev_dependencies:
   test: 
   build_runner:
   dioc_generator:
-    path: ../dioc_generator
+    path: ../
   pedantic: ^1.8.0+1

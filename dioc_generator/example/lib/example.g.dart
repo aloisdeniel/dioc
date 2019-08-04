@@ -10,8 +10,8 @@ class _AppBootstrapper extends AppBootstrapper {
   Container base() {
     final container = Container();
     container.register<OtherService>(
-        (c) => OtherService(c.create<Service>(creator: 'test'),
-            dependency2: c.singleton<Service>()),
+        (c) => OtherService(c.get<Service>(creator: 'test'),
+            dependency2: c.get<Service>()),
         defaultMode: InjectMode.unspecified);
     return container;
   }
@@ -19,7 +19,7 @@ class _AppBootstrapper extends AppBootstrapper {
   Container development() {
     final container = this.base();
     container.register<Service>((c) => MockService(),
-        name: 'test', defaultMode: InjectMode.singleton);
+        name: 'test', defaultMode: InjectMode.unspecified);
     return container;
   }
 
@@ -35,6 +35,6 @@ class AppBootstrapperBuilder {
   static final _AppBootstrapper instance = build();
 
   static _AppBootstrapper build() {
-    return new _AppBootstrapper();
+    return _AppBootstrapper();
   }
 }

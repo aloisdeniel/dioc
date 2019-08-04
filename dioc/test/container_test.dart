@@ -4,11 +4,11 @@ import 'package:test/test.dart';
 class A {
   final String value;
 
-  A([String value = null]) : value = value ?? "A";
+  A([String value]) : value = value ?? "A";
 }
 
 class B extends A {
-  B([String value = null]) : super(value ?? "B");
+  B([String value]) : super(value ?? "B");
 }
 
 class C {
@@ -19,7 +19,6 @@ class C {
 
 void main() {
   group('Registration', () {
-
     Container container;
 
     setUp(() {

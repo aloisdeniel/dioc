@@ -8,7 +8,7 @@ environment:
   sdk: '>2.0.0-dev <3.0.0'
 
 dependencies:
-    path: ../dioc
+  dioc: ^0.1.6 
 
 dev_dependencies:
   test: 

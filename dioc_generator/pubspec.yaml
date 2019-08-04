@@ -1,6 +1,6 @@
 name: dioc_generator
 description: A generator of code for dioc containers.
-version: 0.1.6
+version: 0.1.7
 homepage: https://github.com/aloisdeniel/dioc
 author: Aloïs Deniel <alois.deniel@outlook.com>
 
@@ -15,7 +15,7 @@ dependencies:
   code_builder: ^3.2.0
   build_test: ^0.10.8
   build_runner: ^1.6.5
-  dioc: ^0.1.6 
+  dioc: ^0.1.7
 dev_dependencies:
   test:
   pedantic: ^1.8.0+1

@@ -18,3 +18,4 @@ dependencies:
   dioc: ^0.1.6 
 dev_dependencies:
   test:
+  pedantic: ^1.8.0+1

@@ -11,3 +11,4 @@ dependencies:
 
 dev_dependencies:
   test: 
+  pedantic: ^1.8.0+1

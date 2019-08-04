@@ -16,35 +16,33 @@ class BootstrapperGenerator extends Generator {
 
   @override
   Future<String> generate(LibraryReader library, _) async {
-
     var output = new StringBuffer();
 
-    final bootstrappers = library.annotatedWith(const TypeChecker.fromRuntime(Bootstrapper));
+    final bootstrappers =
+        library.annotatedWith(const TypeChecker.fromRuntime(Bootstrapper));
 
     final classes = <Class>[];
 
     bootstrappers.forEach((bootstrapper) {
-
       final element = bootstrapper.element;
 
-      if(element is ClassElement) {
-
+      if (element is ClassElement) {
         final bootstrapperClassBuilder = new ClassBuilder()
           ..name = "_${element.name}"
           ..extend = refer(element.name, element.librarySource.uri.toString());
 
         // Default environment
-        final defaultProviders = _findAnnotation(element,Provide);;
+        final defaultProviders = _findAnnotation(element, Provide);
 
-        bootstrapperClassBuilder.methods.add(
-            _generateEnvironmentMethod("base", true, defaultProviders));
+        bootstrapperClassBuilder.methods
+            .add(_generateEnvironmentMethod("base", true, defaultProviders));
 
         // Environments
         element.methods.forEach((method) {
           if (method.returnType.name != "Container")
-            throw("A bootstrapper must have only method with a Container returnType");
+            throw ("A bootstrapper must have only method with a Container returnType");
 
-          final methodProviders = _findAnnotation(method,Provide);
+          final methodProviders = _findAnnotation(method, Provide);
           bootstrapperClassBuilder.methods.add(
               _generateEnvironmentMethod(method.name, false, methodProviders));
         });
@@ -60,15 +58,13 @@ class BootstrapperGenerator extends Generator {
           ..static = true
           ..modifier = FieldModifier.final$
           ..type = refer("_${element.name}")
-          ..assignment = new Code("build()")
-        ));
+          ..assignment = new Code("build()")));
 
         bootstrapperBuilderClassBuilder.methods.add(new Method((b) => b
           ..name = "build"
           ..static = true
           ..returns = refer("_${element.name}")
-          ..body = new Code("return new _AppBootstrapper();")
-        ));
+          ..body = new Code("return new _AppBootstrapper();")));
 
         classes.add(bootstrapperBuilderClassBuilder.build());
       }
@@ -78,17 +74,17 @@ class BootstrapperGenerator extends Generator {
 
     final emitter = new DartEmitter();
     classes.forEach((c) {
-      output.writeln(new DartFormatter().format(
-          '${c.accept(emitter)}'));
+      output.writeln(new DartFormatter().format('${c.accept(emitter)}'));
     });
     return '$output';
   }
 
-  Method _generateEnvironmentMethod(String name, bool createContainer, List<AnnotatedElement> providers) {
-
+  Method _generateEnvironmentMethod(
+      String name, bool createContainer, List<AnnotatedElement> providers) {
     var code = new BlockBuilder();
 
-    code.statements.add(new Code("final container = ${createContainer ? "Container()" : "this.base()" };"));
+    code.statements.add(new Code(
+        "final container = ${createContainer ? "Container()" : "this.base()"};"));
 
     providers.forEach((provide) {
       var statement = _generateRegistration(provide);
@@ -110,33 +106,47 @@ class BootstrapperGenerator extends Generator {
     var name = annotation.getField("name").toStringValue();
     name = name != null ? ", name: '$name'" : "";
     DartType abstraction = annotation.getField("abstraction").toTypeValue();
-    DartType implementation = annotation.getField("implementation").toTypeValue();
+    DartType implementation =
+        annotation.getField("implementation").toTypeValue();
 
     // Scanning constructor
-    final implementationClass = implementation.element.library.getType(implementation.name);
-    final parameters = implementationClass.unnamedConstructor.parameters.map((c) => _generateParameter(implementationClass, c)).join(", ");
-    
-    var modeIndex = annotation?.getField("defaultMode")?.getField("index")?.toIntValue() ?? 0;
+    final implementationClass =
+        implementation.element.library.getType(implementation.name);
+    final parameters = implementationClass.unnamedConstructor.parameters
+        .map((c) => _generateParameter(implementationClass, c))
+        .join(", ");
+
+    var modeIndex =
+        annotation?.getField("defaultMode")?.getField("index")?.toIntValue() ??
+            0;
     var defaultMode = InjectMode.values[modeIndex].toString().substring(11);
-    
-    return new Code("container.register<${abstraction.name}>((c) => ${implementation.name}($parameters)$name, defaultMode: InjectMode.$defaultMode);");
+
+    return new Code(
+        "container.register<${abstraction.name}>((c) => ${implementation.name}($parameters)$name, defaultMode: InjectMode.$defaultMode);");
   }
 
-  String _generateParameter(ClassElement implementationClass, ParameterElement c) {
-
+  String _generateParameter(
+      ClassElement implementationClass, ParameterElement c) {
     var field = implementationClass.getField(c.name);
-    final injectAnnotation = const TypeChecker.fromRuntime(Inject).firstAnnotationOf(field);
+    final injectAnnotation =
+        const TypeChecker.fromRuntime(Inject).firstAnnotationOf(field);
 
     var name = injectAnnotation?.getField("name")?.toStringValue();
     name = name != null ? "name: '$name'" : "";
 
     var creator = injectAnnotation?.getField("creator")?.toStringValue();
-    creator = creator != null ? (name != "" ? ", " : "") + "creator: '$creator'" : "";
+    creator =
+        creator != null ? (name != "" ? ", " : "") + "creator: '$creator'" : "";
 
-    var modeIndex = injectAnnotation?.getField("mode")?.getField("index")?.toIntValue() ?? 0;
-    var mode = modeIndex == 0 ? "get" : InjectMode.values[modeIndex].toString().substring(11);
+    var modeIndex =
+        injectAnnotation?.getField("mode")?.getField("index")?.toIntValue() ??
+            0;
+    var mode = modeIndex == 0
+        ? "get"
+        : InjectMode.values[modeIndex].toString().substring(11);
 
-    return (c.parameterKind == ParameterKind.NAMED ? c.name + ": " : "") +  "c.$mode<${c.type.name}>($name$creator)";
+    return (c.parameterKind == ParameterKind.NAMED ? c.name + ": " : "") +
+        "c.$mode<${c.type.name}>($name$creator)";
   }
 
   List<AnnotatedElement> _findAnnotation(Element element, Type annotation) {

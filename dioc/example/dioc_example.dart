@@ -10,20 +10,16 @@ class MockService implements Service {
   Future<String> getContent(String id) async => "TEST";
 }
 
-
 class OtherService {
-
   final Service dependency;
 
   OtherService(this.dependency);
 }
 
-
 class WebService implements Service {
   @override
   Future<String> getContent(String id) async => "TEST";
 }
-
 
 @Provide.implemented(OtherService)
 abstract class AppBootstrapper extends Bootstrapper {
@@ -39,7 +35,8 @@ abstract class AppBootstrapper extends Bootstrapper {
 class _AppBootstrapper implements AppBootstrapper {
   Container base() {
     final container = Container();
-    container.register<OtherService>((c) => OtherService(c.singleton<Service>()));
+    container
+        .register<OtherService>((c) => OtherService(c.singleton<Service>()));
     return container;
   }
 
@@ -56,13 +53,11 @@ class _AppBootstrapper implements AppBootstrapper {
   }
 }
 
-class AppBootstrapperBuilder  {
+class AppBootstrapperBuilder {
   static final AppBootstrapper instance = build();
   static AppBootstrapper build() => _AppBootstrapper();
 }
 
 // Main
 
-main() {
-
-}
+main() {}

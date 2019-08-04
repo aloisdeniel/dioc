@@ -19,7 +19,6 @@ class C {
 
 void main() {
   group('Registration', () {
-
     Container container;
 
     setUp(() {

@@ -22,7 +22,7 @@ class OtherService {
   @inject
   final Service dependency2;
 
-  OtherService(this.dependency,{this.dependency2});
+  OtherService(this.dependency, {this.dependency2});
 }
 
 class WebService implements Service {
@@ -33,7 +33,8 @@ class WebService implements Service {
 @bootstrapper
 @Provide.implemented(OtherService)
 abstract class AppBootstrapper extends Bootstrapper {
-  @Provide(Service, MockService, name: "test", defaultMode: InjectMode.singleton)
+  @Provide(Service, MockService,
+      name: "test", defaultMode: InjectMode.singleton)
   Container development();
 
   @Provide(Service, WebService)

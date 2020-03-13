@@ -67,7 +67,7 @@ class BootstrapperGenerator extends Generator {
           ..name = "build"
           ..static = true
           ..returns = refer("_${element.name}")
-          ..body = new Code("return new _AppBootstrapper();")
+          ..body = new Code("return new _${element.name}();")
         ));
 
         classes.add(bootstrapperBuilderClassBuilder.build());
